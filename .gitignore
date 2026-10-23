@@ -1,0 +1,12 @@
+# XAMPP & OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+
+# Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
