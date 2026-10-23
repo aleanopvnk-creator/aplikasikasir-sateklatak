@@ -171,17 +171,17 @@ class PosUI {
     this.btnHoldOrder.addEventListener('click', () => {
       const res = this.store.holdCurrentOrder();
       if (res.success) {
-        alert(`Pesanan Meja "${res.order.tableNumber}" atas nama "${res.order.customerName}" berhasil disimpan ke daftar pesanan.`);
+        notify.success(`Pesanan ${res.order.tableNumber} atas nama "${res.order.customerName}" berhasil disimpan ke daftar pesanan.`, 'Pesanan Disimpan');
         this.closeMobileCart();
       } else {
-        alert(res.message);
+        notify.warning(res.message, 'Peringatan');
       }
     });
 
     // Checkout Action (Open Payment Modal)
     this.btnCheckout.addEventListener('click', () => {
       if (this.store.cart.length === 0) {
-        alert('Keranjang belanja masih kosong.');
+        notify.warning('Keranjang belanja masih kosong. Silakan pilih menu terlebih dahulu.', 'Keranjang Kosong');
         return;
       }
       this.openPaymentModal();
@@ -250,7 +250,7 @@ class PosUI {
         const file = e.target.files && e.target.files[0];
         if (file) {
           if (file.size > 2 * 1024 * 1024) {
-            alert('Ukuran foto maksimal 2 MB.');
+            notify.warning('Ukuran file foto maksimal adalah 2 MB.', 'Foto Terlalu Besar');
             return;
           }
           const reader = new FileReader();
@@ -263,6 +263,7 @@ class PosUI {
             if (this.modalCashierInitials) {
               this.modalCashierInitials.style.display = 'none';
             }
+            notify.success('Foto profil berhasil diunggah. Klik "Simpan Profil" untuk menerapkan.', 'Foto Terunggah');
           };
           reader.readAsDataURL(file);
         }
@@ -280,6 +281,7 @@ class PosUI {
           const name = (this.cashierNameInputModal && this.cashierNameInputModal.value) || 'Mbak Lala';
           this.modalCashierInitials.innerText = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'ML';
         }
+        notify.info('Foto kasir telah dihapus.', 'Foto Dihapus');
       });
     }
 
@@ -301,6 +303,7 @@ class PosUI {
         this.store.updateCashierProfile(newName, this.tempCashierPhoto);
         this.renderCashierHeader();
         this.closeAllModals();
+        notify.success(`Profil kasir "${newName}" berhasil diperbarui.`, 'Profil Disimpan');
         sound.playTap();
       });
     }
@@ -718,6 +721,7 @@ class PosUI {
             }
           }
           this.closeAllModals();
+          notify.info(`Area pesanan diubah ke "${tbl}".`, 'Area Meja');
           sound.playTap();
         });
 
@@ -759,6 +763,7 @@ class PosUI {
     document.getElementById('btnSaveItemNotes').onclick = () => {
       this.store.updateItemNotes(this.editingCartItemId, textarea.value);
       this.closeAllModals();
+      notify.success(`Catatan untuk ${itemName} berhasil disimpan.`, 'Catatan Disimpan');
       sound.playTap();
     };
 
@@ -865,7 +870,7 @@ class PosUI {
     if (this.selectedPaymentMethod === 'cash') {
       const cashReceived = Number(document.getElementById('cashReceivedInput').value) || 0;
       if (cashReceived < calc.grandTotal) {
-        alert('Jumlah uang tunai yang diterima kurang dari total tagihan.');
+        notify.warning(`Jumlah uang tunai (${formatRupiah(cashReceived)}) kurang dari total tagihan (${formatRupiah(calc.grandTotal)}).`, 'Uang Kurang');
         return;
       }
       paymentData.cashTendered = cashReceived;
@@ -884,6 +889,7 @@ class PosUI {
     if (res.success) {
       this.closeAllModals();
       this.closeMobileCart();
+      notify.success(`Pembayaran ${formatRupiah(res.transaction.grandTotal)} (${res.transaction.paymentMethod.toUpperCase()}) berhasil!`, 'Transaksi Berhasil');
       this.showReceiptModal(res.transaction);
     }
   }
@@ -1049,11 +1055,20 @@ class PosUI {
         itemElem.querySelector('.btn-recall-hold').addEventListener('click', () => {
           this.store.recallOrder(order.orderId);
           this.closeAllModals();
+          notify.success(`Pesanan ${order.tableNumber} atas nama "${order.customerName}" telah dimuat ke keranjang.`, 'Pesanan Dibuka');
         });
 
-        itemElem.querySelector('.btn-cancel-hold').addEventListener('click', () => {
-          if (confirm(`Yakin ingin membatalkan pesanan ${order.tableNumber} (${order.customerName})?`)) {
+        itemElem.querySelector('.btn-cancel-hold').addEventListener('click', async () => {
+          const ok = await notify.confirm({
+            title: 'Batalkan Pesanan Tersimpan?',
+            message: `Pesanan ${order.tableNumber} atas nama "${order.customerName}" (${formatRupiah(order.totals.grandTotal)}) akan dihapus dari daftar pesanan.`,
+            confirmText: 'Ya, Batalkan',
+            cancelText: 'Kembali',
+            type: 'danger'
+          });
+          if (ok) {
             this.store.deleteSavedOrder(order.orderId);
+            notify.info(`Pesanan ${order.tableNumber} (${order.customerName}) telah dibatalkan.`, 'Pesanan Dibatalkan');
             this.openSavedOrdersModal();
           }
         });

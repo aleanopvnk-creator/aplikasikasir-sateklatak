@@ -162,7 +162,9 @@ class PosStore {
     const item = this.menu.find(m => m.id === menuId);
     if (!item) return false;
     if (!item.available) {
-      alert(`Menu "${item.name}" saat ini sedang habis.`);
+      if (window.notify) {
+        notify.warning(`Menu "${item.name}" saat ini sedang habis stoknya.`, 'Stok Habis');
+      }
       return false;
     }
 
