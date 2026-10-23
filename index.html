@@ -229,13 +229,16 @@
 
   <!-- 1. Table Selector Modal -->
   <div id="modalTables" class="modal-overlay">
-    <div class="modal-content" style="max-width: 440px;">
+    <div class="modal-content" style="max-width: 500px;">
       <div class="modal-header">
-        <h3>Pilih Nomor Meja / Area</h3>
+        <div>
+          <h3>Pilih Nomor Meja / Area</h3>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">Pilih meja makan (1-12), lesehan (1-8), atau bungkus</p>
+        </div>
         <button class="modal-close-btn">&times;</button>
       </div>
-      <div class="modal-body">
-        <div id="tableOptionsList" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+      <div class="modal-body" style="padding: 16px 20px; max-height: 70vh; overflow-y: auto;">
+        <div id="tableOptionsList">
           <!-- Populated by ui.js -->
         </div>
       </div>
@@ -503,19 +506,9 @@
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 6px;">
           <label for="cashierNameInput">Nama Kasir / Petugas:</label>
           <input type="text" id="cashierNameInput" class="form-input" placeholder="Masukkan nama kasir..." value="Mbak Lala">
-        </div>
-
-        <div>
-          <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:6px;">PILIHAN CEPAT:</label>
-          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-            <button type="button" class="quick-cashier-preset" data-name="Mbak Lala" style="padding: 5px 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer;">Mbak Lala</button>
-            <button type="button" class="quick-cashier-preset" data-name="Kasir 1" style="padding: 5px 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer;">Kasir 1</button>
-            <button type="button" class="quick-cashier-preset" data-name="Kasir 2" style="padding: 5px 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer;">Kasir 2</button>
-            <button type="button" class="quick-cashier-preset" data-name="Admin POS" style="padding: 5px 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer;">Admin POS</button>
-          </div>
         </div>
       </div>
       <div class="modal-footer">

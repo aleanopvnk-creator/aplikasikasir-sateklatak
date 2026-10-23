@@ -27,7 +27,7 @@ Aplikasi Point of Sale (POS) modern, cepat, dan responsif untuk **Sate Klatak Mb
 
 4. **Kustomisasi Pesanan (Catatan Meja & Menu)**
    - Tipe pesanan: **Makan di Tempat (Dine-in)** atau **Bawa Pulang (Takeaway)**.
-   - Pemilihan nomor meja: *Meja 01 s/d Meja 10, Lesehan 01-03, VIP Room*.
+   - Pemilihan nomor meja: *Meja 01 s/d Meja 12, Lesehan 01 s/d Lesehan 08, dan Bungkus*.
    - Catatan khusus per menu (misal: *"Kuah dipisah"*, *"Pedas sedang"*, *"Tanpa jeroan"*, *"Bawang goreng banyak"*).
 
 5. **Simpan Pesanan (Hold Bill / Open Bills)**

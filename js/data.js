@@ -380,9 +380,13 @@ const QUICK_NOTES = [
   'Bungkus Pisah'
 ];
 
-// Table numbers list
+// Table numbers and areas list
 const TABLES = [
-  'Meja 01', 'Meja 02', 'Meja 03', 'Meja 04', 'Meja 05',
-  'Meja 06', 'Meja 07', 'Meja 08', 'Meja 09', 'Meja 10',
-  'Lesehan 01', 'Lesehan 02', 'Lesehan 03', 'VIP Room', 'Bungkus / Luar'
+  'Meja 01', 'Meja 02', 'Meja 03', 'Meja 04',
+  'Meja 05', 'Meja 06', 'Meja 07', 'Meja 08',
+  'Meja 09', 'Meja 10', 'Meja 11', 'Meja 12',
+  'Lesehan 01', 'Lesehan 02', 'Lesehan 03', 'Lesehan 04',
+  'Lesehan 05', 'Lesehan 06', 'Lesehan 07', 'Lesehan 08',
+  'Bungkus'
 ];
+

@@ -283,19 +283,16 @@ class PosUI {
       });
     }
 
-    // Quick Cashier Preset Buttons
-    document.querySelectorAll('.quick-cashier-preset').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const presetName = e.currentTarget.dataset.name;
-        if (this.cashierNameInputModal) {
-          this.cashierNameInputModal.value = presetName;
-          const initials = presetName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'ML';
-          if (!this.tempCashierPhoto && this.modalCashierInitials) {
-            this.modalCashierInitials.innerText = initials;
-          }
+    // Live update initials preview on typing name
+    if (this.cashierNameInputModal) {
+      this.cashierNameInputModal.addEventListener('input', (e) => {
+        if (!this.tempCashierPhoto && this.modalCashierInitials) {
+          const val = e.target.value.trim() || 'K';
+          const initials = val.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'K';
+          this.modalCashierInitials.innerText = initials;
         }
       });
-    });
+    }
 
     // Save Cashier Profile Button
     if (this.btnSaveCashierProfile) {
@@ -640,32 +637,95 @@ class PosUI {
     const listContainer = document.getElementById('tableOptionsList');
     listContainer.innerHTML = '';
 
-    TABLES.forEach(tbl => {
-      const btn = document.createElement('button');
-      btn.className = `btn-table-choice ${this.store.activeOrder.tableNumber === tbl ? 'selected' : ''}`;
-      btn.style.cssText = `
-        padding: 10px 14px;
-        border-radius: 10px;
-        border: 1px solid ${this.store.activeOrder.tableNumber === tbl ? 'var(--primary)' : 'var(--border)'};
-        background: ${this.store.activeOrder.tableNumber === tbl ? 'var(--primary-light)' : '#ffffff'};
-        color: ${this.store.activeOrder.tableNumber === tbl ? 'var(--primary)' : 'var(--text-main)'};
-        font-weight: 700;
-        font-size: 0.85rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.15s;
-      `;
-      btn.innerText = tbl;
+    const sections = [
+      {
+        title: 'Area Meja (1 - 12)',
+        desc: 'Meja kursi makan',
+        items: [
+          'Meja 01', 'Meja 02', 'Meja 03', 'Meja 04',
+          'Meja 05', 'Meja 06', 'Meja 07', 'Meja 08',
+          'Meja 09', 'Meja 10', 'Meja 11', 'Meja 12'
+        ]
+      },
+      {
+        title: 'Area Lesehan (1 - 8)',
+        desc: 'Meja lesehan santai',
+        items: [
+          'Lesehan 01', 'Lesehan 02', 'Lesehan 03', 'Lesehan 04',
+          'Lesehan 05', 'Lesehan 06', 'Lesehan 07', 'Lesehan 08'
+        ]
+      },
+      {
+        title: 'Bawa Pulang',
+        desc: 'Pesanan tidak makan di tempat',
+        items: ['Bungkus']
+      }
+    ];
 
-      btn.addEventListener('click', () => {
-        this.store.setTableNumber(tbl);
-        this.closeAllModals();
-        sound.playTap();
+    sections.forEach((sec, idx) => {
+      const sectionWrapper = document.createElement('div');
+      sectionWrapper.style.marginBottom = idx === sections.length - 1 ? '4px' : '16px';
+
+      const headerDiv = document.createElement('div');
+      headerDiv.style.cssText = 'display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;';
+      headerDiv.innerHTML = `
+        <span style="font-size:0.8rem; font-weight:800; color:var(--text-main); text-transform:uppercase; letter-spacing:0.5px;">${sec.title}</span>
+        <span style="font-size:0.72rem; color:var(--text-muted);">${sec.desc}</span>
+      `;
+      sectionWrapper.appendChild(headerDiv);
+
+      const gridDiv = document.createElement('div');
+      if (sec.items.length === 1 && sec.items[0] === 'Bungkus') {
+        gridDiv.style.cssText = 'display:grid; grid-template-columns:1fr; gap:8px;';
+      } else {
+        gridDiv.style.cssText = 'display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;';
+      }
+
+      sec.items.forEach(tbl => {
+        const isSelected = this.store.activeOrder.tableNumber === tbl;
+        const btn = document.createElement('button');
+        btn.className = `btn-table-choice ${isSelected ? 'selected' : ''}`;
+        
+        let iconPrefix = '';
+        if (tbl === 'Bungkus') {
+          iconPrefix = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/></svg>`;
+        }
+
+        btn.style.cssText = `
+          padding: ${tbl === 'Bungkus' ? '12px 16px' : '10px 4px'};
+          border-radius: 10px;
+          border: 1.5px solid ${isSelected ? 'var(--primary)' : 'var(--border)'};
+          background: ${isSelected ? 'var(--primary-light)' : '#ffffff'};
+          color: ${isSelected ? 'var(--primary)' : 'var(--text-main)'};
+          font-weight: 700;
+          font-size: ${tbl === 'Bungkus' ? '0.92rem' : '0.82rem'};
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.15s ease;
+          box-shadow: ${isSelected ? '0 2px 6px rgba(22, 163, 74, 0.2)' : 'none'};
+        `;
+        btn.innerHTML = `${iconPrefix}<span>${tbl}</span>`;
+
+        btn.addEventListener('click', () => {
+          this.store.setTableNumber(tbl);
+          if (tbl === 'Bungkus') {
+            this.store.setOrderType('takeaway');
+            if (this.orderTypeTakeaway && this.orderTypeDineIn) {
+              this.orderTypeTakeaway.classList.add('active');
+              this.orderTypeDineIn.classList.remove('active');
+            }
+          }
+          this.closeAllModals();
+          sound.playTap();
+        });
+
+        gridDiv.appendChild(btn);
       });
 
-      listContainer.appendChild(btn);
+      sectionWrapper.appendChild(gridDiv);
+      listContainer.appendChild(sectionWrapper);
     });
 
     this.modalTables.classList.add('active');
