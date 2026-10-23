@@ -32,6 +32,9 @@ class PosStore {
         if (!parsed.storeAddress || parsed.storeAddress.includes('Imogiri')) {
           parsed.storeAddress = 'Parkiran Timur, Pasar Kolombo, Jl. Kaliurang Km. 7, Depok, Sleman';
         }
+        if (!parsed.storePhone || parsed.storePhone === '0812-3456-7890') {
+          parsed.storePhone = '0812-3823-0005';
+        }
         if (!parsed.cashierName || parsed.cashierName === 'Mira Workman') {
           parsed.cashierName = 'Mbak Lala';
         }
@@ -44,7 +47,7 @@ class PosStore {
     return {
       storeName: 'SATE KLATAK MBAK LALA',
       storeAddress: 'Parkiran Timur, Pasar Kolombo, Jl. Kaliurang Km. 7, Depok, Sleman',
-      storePhone: '0812-3456-7890',
+      storePhone: '0812-3823-0005',
       cashierName: 'Mbak Lala',
       cashierPhoto: null,
       enableTax: false,

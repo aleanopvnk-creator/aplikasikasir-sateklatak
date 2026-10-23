@@ -72,9 +72,44 @@
     margin: 3mm 0 !important;
   }
 
-  .receipt-item-calc,
-  .receipt-row {
-    color: #000000 !important;
+  .receipt-logo-img {
+    width: 65px !important;
+    height: 65px !important;
+    border-radius: 50% !important;
+    object-fit: contain !important;
+    border: 1.5px solid #000000 !important;
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: crisp-edges !important;
+    display: block !important;
+    margin: 0 auto 2mm auto !important;
+    filter: contrast(150%) !important;
+  }
+
+  .receipt-qris-box {
+    margin: 2mm auto !important;
+    text-align: center !important;
+  }
+
+  .receipt-qris-img {
+    width: 32mm !important;
+    height: 32mm !important;
+    object-fit: contain !important;
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: crisp-edges !important;
+    display: block !important;
+    margin: 0 auto 1mm auto !important;
+    border: 1px solid #000000 !important;
+    padding: 1mm !important;
+    filter: contrast(180%) !important;
+  }
+
+  .receipt-footer {
+    text-align: center !important;
+    margin-top: 3mm !important;
+  }
+
+  .receipt-footer p {
+    margin: 1mm 0 !important;
   }
 
   @page {

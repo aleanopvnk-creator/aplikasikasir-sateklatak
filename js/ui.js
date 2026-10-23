@@ -222,6 +222,20 @@ class PosUI {
       });
     });
 
+    // Toggle Full QRIS Poster in Payment Modal
+    const btnToggleQris = document.getElementById('btnToggleFullQrisPoster');
+    const fullQrisBox = document.getElementById('qrisFullPosterBox');
+    const qrisBtnText = document.getElementById('qrisToggleBtnText');
+    if (btnToggleQris && fullQrisBox) {
+      btnToggleQris.addEventListener('click', () => {
+        const isHidden = fullQrisBox.style.display === 'none';
+        fullQrisBox.style.display = isHidden ? 'block' : 'none';
+        if (qrisBtnText) {
+          qrisBtnText.innerText = isHidden ? 'Sembunyikan Poster QRIS' : 'Lihat Poster Resmi QRIS';
+        }
+      });
+    }
+
     // Cash Input Listener for Auto Change Calculation
     const cashInput = document.getElementById('cashReceivedInput');
     if (cashInput) {
@@ -785,6 +799,11 @@ class PosUI {
       p.classList.toggle('active', p.dataset.method === 'cash');
     });
 
+    const fullQrisBox = document.getElementById('qrisFullPosterBox');
+    const qrisBtnText = document.getElementById('qrisToggleBtnText');
+    if (fullQrisBox) fullQrisBox.style.display = 'none';
+    if (qrisBtnText) qrisBtnText.innerText = 'Lihat Poster Resmi QRIS';
+
     // Populate cash shortcut chips
     this.renderCashShortcuts(calc.grandTotal);
     this.updatePaymentModalView();
@@ -846,19 +865,9 @@ class PosUI {
   updatePaymentModalView() {
     const cashSection = document.getElementById('paymentCashSection');
     const qrisSection = document.getElementById('paymentQrisSection');
-    const otherSection = document.getElementById('paymentOtherSection');
 
     cashSection.style.display = this.selectedPaymentMethod === 'cash' ? 'block' : 'none';
     qrisSection.style.display = this.selectedPaymentMethod === 'qris' ? 'block' : 'none';
-    otherSection.style.display = (this.selectedPaymentMethod === 'debit' || this.selectedPaymentMethod === 'transfer') ? 'block' : 'none';
-
-    if (this.selectedPaymentMethod === 'debit') {
-      document.getElementById('otherPaymentTitle').innerText = 'Pembayaran Kartu Debit / EDC';
-      document.getElementById('otherPaymentRefLabel').innerText = 'Nomor Kartu / Approval Code:';
-    } else if (this.selectedPaymentMethod === 'transfer') {
-      document.getElementById('otherPaymentTitle').innerText = 'Transfer Bank (BCA / Mandiri / BRI)';
-      document.getElementById('otherPaymentRefLabel').innerText = 'Nomor Referensi Transfer:';
-    }
   }
 
   processCheckout() {
@@ -875,21 +884,19 @@ class PosUI {
       }
       paymentData.cashTendered = cashReceived;
       paymentData.change = cashReceived - calc.grandTotal;
-    } else if (this.selectedPaymentMethod === 'qris') {
-      paymentData.cashTendered = calc.grandTotal;
-      paymentData.change = 0;
-      paymentData.referenceNumber = 'QRIS-' + Date.now().toString(36).toUpperCase();
     } else {
+      // QRIS
+      paymentData.method = 'qris';
       paymentData.cashTendered = calc.grandTotal;
       paymentData.change = 0;
-      paymentData.referenceNumber = document.getElementById('otherPaymentRefInput').value.trim() || 'EDC-' + Math.floor(100000 + Math.random() * 900000);
+      paymentData.referenceNumber = 'NMID-ID1026545930905';
     }
 
     const res = this.store.checkout(paymentData);
     if (res.success) {
       this.closeAllModals();
       this.closeMobileCart();
-      notify.success(`Pembayaran ${formatRupiah(res.transaction.grandTotal)} (${res.transaction.paymentMethod.toUpperCase()}) berhasil!`, 'Transaksi Berhasil');
+      notify.success(`Pembayaran ${formatRupiah(res.transaction.grandTotal)} (${res.transaction.paymentMethod === 'cash' ? 'TUNAI' : 'QRIS'}) berhasil!`, 'Transaksi Berhasil');
       this.showReceiptModal(res.transaction);
     }
   }
@@ -969,8 +976,8 @@ class PosUI {
       <div class="receipt-divider"></div>
 
       <div class="receipt-row">
-        <span>Metode: ${transaction.paymentMethod.toUpperCase()}</span>
-        <span>Bayar: ${formatRupiah(transaction.cashTendered)}</span>
+        <span>Metode: ${transaction.paymentMethod === 'cash' ? 'TUNAI' : 'QRIS'}</span>
+        <span>${transaction.paymentMethod === 'cash' ? `Bayar: ${formatRupiah(transaction.cashTendered)}` : 'LUNAS'}</span>
       </div>
 
       ${transaction.paymentMethod === 'cash' ? `
@@ -980,8 +987,12 @@ class PosUI {
         </div>
       ` : `
         <div class="receipt-row">
-          <span>Ref: ${transaction.paymentRef}</span>
-          <span>LUNAS</span>
+          <span>NMID</span>
+          <span>ID1026545930905</span>
+        </div>
+        <div class="receipt-qris-box">
+          <img src="assets/qris_qr.png" alt="QRIS Sate Klatak Mbak Lala" class="receipt-qris-img">
+          <div class="receipt-qris-nmid">QRIS SATE KLATAK MBAK LALA</div>
         </div>
       `}
 
@@ -989,8 +1000,8 @@ class PosUI {
 
       <div class="receipt-footer">
         <p style="font-weight:bold; margin-bottom:4px;">MATUR NUWUN SAMPUN RAWUH</p>
-        <p>Semoga Berkenan & Diberkahi Selalu</p>
-        <p style="margin-top:6px; font-size:0.65rem;">POS Sate Klatak Mbak Lala v1.0</p>
+        <p>Terima Kasih Atas Kunjungan Anda</p>
+        <p style="margin-top:6px; font-weight:700;">sate klatak mbak lala</p>
       </div>
     `;
 
@@ -1139,9 +1150,12 @@ class PosUI {
     document.getElementById('reportTotalRevenue').innerText = formatRupiah(stats.totalRevenue);
     document.getElementById('reportTotalTransactions').innerText = `${stats.totalTransactions} Transaksi`;
 
-    document.getElementById('reportCashRevenue').innerText = formatRupiah(stats.paymentBreakdown.cash);
-    document.getElementById('reportQrisRevenue').innerText = formatRupiah(stats.paymentBreakdown.qris);
-    document.getElementById('reportDebitRevenue').innerText = formatRupiah(stats.paymentBreakdown.debit + stats.paymentBreakdown.transfer);
+    document.getElementById('reportCashRevenue').innerText = formatRupiah(stats.paymentBreakdown.cash || 0);
+    document.getElementById('reportQrisRevenue').innerText = formatRupiah(stats.paymentBreakdown.qris || 0);
+    const debitElem = document.getElementById('reportDebitRevenue');
+    if (debitElem) {
+      debitElem.innerText = formatRupiah((stats.paymentBreakdown.debit || 0) + (stats.paymentBreakdown.transfer || 0));
+    }
 
     const topList = document.getElementById('reportTopItemsList');
     topList.innerHTML = '';

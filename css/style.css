@@ -249,13 +249,16 @@ body {
 }
 
 .receipt-logo-img {
-  width: 58px;
-  height: 58px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
-  object-fit: cover;
+  object-fit: contain;
   margin: 0 auto 6px auto;
   display: block;
-  border: 1px solid #1e293b;
+  background: #ffffff;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  border: 1.5px solid #0f172a;
 }
 
 /* ==========================================================================
@@ -1166,36 +1169,39 @@ body {
 
 .payment-methods-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
   margin-bottom: 18px;
 }
 
 .payment-method-pill {
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   background: #ffffff;
-  padding: 10px 6px;
+  padding: 12px 14px;
   border-radius: var(--radius-md);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  font-size: 0.78rem;
-  font-weight: 700;
+  gap: 10px;
+  font-size: 0.92rem;
+  font-weight: 800;
   color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .payment-method-pill:hover {
-  border-color: var(--border-focus);
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--bg-surface);
 }
 
 .payment-method-pill.active {
   background: var(--primary-light);
   border-color: var(--primary);
   color: var(--primary);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
 }
 
 /* Cash Amount Shortcuts */
@@ -1292,14 +1298,14 @@ body {
   color: var(--primary);
 }
 
-/* QRIS Display Container */
+/* Real Authentic HD QRIS Display Container */
 .qris-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background: #ffffff;
+  background: #f8fafc;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   text-align: center;
@@ -1308,39 +1314,173 @@ body {
 .qris-card {
   background: #ffffff;
   border: 2px solid #0f172a;
-  border-radius: var(--radius-md);
-  padding: 16px;
-  width: 240px;
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  width: 100%;
+  max-width: 320px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-.qris-header {
-  font-size: 0.9rem;
+.qris-card-header {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.qris-badge-title {
+  font-size: 1.4rem;
   font-weight: 900;
   letter-spacing: 1px;
-  margin-bottom: 8px;
-  color: #d90429;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
-.qris-qr-mock {
-  width: 180px;
-  height: 180px;
+.qris-gpn-text {
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.qris-subtitle {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.qris-merchant-box {
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.qris-merchant-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.2px;
+}
+
+.qris-nmid-text {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #334155;
+  margin-top: 2px;
+}
+
+.qris-terminal-text {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.qris-real-qr-wrapper {
+  width: 220px;
+  height: 220px;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 2px solid #0f172a;
+  border-radius: 10px;
   padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.qris-merchant-info {
-  margin-top: 10px;
-  font-size: 0.75rem;
+.qris-real-qr-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  display: block;
+}
+
+.qris-tagline {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: 0.8px;
+  margin-top: 12px;
+}
+
+.qris-help-text {
+  font-size: 0.72rem;
+  color: #64748b;
+  line-height: 1.35;
+  margin-top: 4px;
+  max-width: 260px;
+}
+
+.btn-qris-view-poster {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  color: #334155;
+  font-size: 0.74rem;
   font-weight: 700;
-  color: var(--text-main);
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-qris-view-poster:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.qris-poster-img {
+  max-width: 280px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  display: block;
+  margin: 0 auto;
+}
+
+/* Receipt QRIS Box */
+.receipt-qris-box {
+  margin: 10px auto;
+  text-align: center;
+  padding: 6px;
+  background: #ffffff;
+}
+
+.receipt-qris-img {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  margin: 0 auto;
+  display: block;
+  border: 1.5px solid #000000;
+  padding: 4px;
+}
+
+.receipt-qris-nmid {
+  font-size: 0.68rem;
+  font-family: inherit;
+  font-weight: bold;
+  margin-top: 4px;
+  letter-spacing: 0.3px;
 }
 
 /* ==========================================================================
