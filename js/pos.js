@@ -81,24 +81,25 @@ class PosStore {
   loadActiveOrder() {
     try {
       const saved = localStorage.getItem(this.STORAGE_KEYS.ACTIVE_ORDER);
-      return saved ? JSON.parse(saved) : {
-        customerName: 'Mira Workman',
-        orderType: 'dine_in', // dine_in | takeaway
-        tableNumber: 'Meja 01',
-        discountPercent: 0,
-        discountNominal: 0,
-        notes: ''
-      };
-    } catch (e) {
-      return {
-        customerName: 'Mira Workman',
-        orderType: 'dine_in',
-        tableNumber: 'Meja 01',
-        discountPercent: 0,
-        discountNominal: 0,
-        notes: ''
-      };
-    }
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (!parsed.customerName || parsed.customerName === 'Mira Workman') {
+          parsed.customerName = 'Pelanggan Baru';
+        }
+        if (parsed.orderType === 'takeaway') {
+          parsed.tableNumber = 'Bawa Pulang';
+        }
+        return parsed;
+      }
+    } catch (e) {}
+    return {
+      customerName: 'Pelanggan Baru',
+      orderType: 'dine_in', // dine_in | takeaway
+      tableNumber: 'Meja 01',
+      discountPercent: 0,
+      discountNominal: 0,
+      notes: ''
+    };
   }
 
   saveActiveOrder() {
@@ -123,10 +124,16 @@ class PosStore {
   loadSavedOrders() {
     try {
       const saved = localStorage.getItem(this.STORAGE_KEYS.SAVED_ORDERS);
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      return [];
-    }
+      if (saved) {
+        const orders = JSON.parse(saved);
+        return orders.map(o => {
+          if (o.customerName === 'Mira Workman') o.customerName = 'Pelanggan Baru';
+          if (o.orderType === 'takeaway' || o.tableNumber === 'Bungkus') o.tableNumber = 'Bawa Pulang';
+          return o;
+        });
+      }
+    } catch (e) {}
+    return [];
   }
 
   saveSavedOrders() {
@@ -244,6 +251,16 @@ class PosStore {
 
   setOrderType(type) {
     this.activeOrder.orderType = type;
+    if (type === 'takeaway') {
+      if (this.activeOrder.tableNumber && this.activeOrder.tableNumber !== 'Bawa Pulang') {
+        this.activeOrder.previousTable = this.activeOrder.tableNumber;
+      }
+      this.activeOrder.tableNumber = 'Bawa Pulang';
+    } else {
+      if (this.activeOrder.tableNumber === 'Bawa Pulang') {
+        this.activeOrder.tableNumber = this.activeOrder.previousTable || 'Meja 01';
+      }
+    }
     this.saveActiveOrder();
   }
 
@@ -304,9 +321,9 @@ class PosStore {
     const savedOrder = {
       orderId: 'HLD-' + Date.now().toString(36).toUpperCase(),
       createdAt: new Date().toISOString(),
-      customerName: this.activeOrder.customerName || 'Pelanggan',
+      customerName: this.activeOrder.customerName || 'Pelanggan Baru',
       orderType: this.activeOrder.orderType,
-      tableNumber: this.activeOrder.tableNumber,
+      tableNumber: this.activeOrder.orderType === 'takeaway' ? 'Bawa Pulang' : (this.activeOrder.tableNumber || 'Meja 01'),
       cart: JSON.parse(JSON.stringify(this.cart)),
       discountPercent: this.activeOrder.discountPercent,
       discountNominal: this.activeOrder.discountNominal,
@@ -382,15 +399,15 @@ class PosStore {
       invoiceNumber,
       createdAt: now.toISOString(),
       cashier: this.settings.cashierName,
-      customerName: this.activeOrder.customerName || 'Umum',
+      customerName: this.activeOrder.customerName || 'Pelanggan',
       orderType: this.activeOrder.orderType,
-      tableNumber: this.activeOrder.tableNumber,
+      tableNumber: this.activeOrder.orderType === 'takeaway' ? 'Bawa Pulang' : (this.activeOrder.tableNumber || 'Meja 01'),
       items: JSON.parse(JSON.stringify(this.cart)),
       subtotal: calc.subtotal,
       discountAmount: calc.discountAmount,
       taxAmount: calc.taxAmount,
       grandTotal: calc.grandTotal,
-      paymentMethod: paymentData.method, // cash | qris | debit | transfer
+      paymentMethod: paymentData.method, // cash | qris
       cashTendered: paymentData.cashTendered || calc.grandTotal,
       change: paymentData.change || 0,
       paymentRef: paymentData.referenceNumber || ''
@@ -402,7 +419,7 @@ class PosStore {
 
     // Clear active cart & reset
     this.cart = [];
-    this.activeOrder.customerName = 'Mira Workman';
+    this.activeOrder.customerName = 'Pelanggan Baru';
     this.activeOrder.discountPercent = 0;
     this.activeOrder.discountNominal = 0;
     this.saveCart();

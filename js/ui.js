@@ -153,12 +153,18 @@ class PosUI {
     this.orderTypeDineIn.addEventListener('click', () => {
       this.orderTypeDineIn.classList.add('active');
       this.orderTypeTakeaway.classList.remove('active');
+      if (this.tableSelectorBtn) {
+        this.tableSelectorBtn.style.display = 'inline-flex';
+      }
       this.store.setOrderType('dine_in');
     });
 
     this.orderTypeTakeaway.addEventListener('click', () => {
       this.orderTypeTakeaway.classList.add('active');
       this.orderTypeDineIn.classList.remove('active');
+      if (this.tableSelectorBtn) {
+        this.tableSelectorBtn.style.display = 'none';
+      }
       this.store.setOrderType('takeaway');
     });
 
@@ -514,8 +520,19 @@ class PosUI {
 
     // Update customer name & table badge
     if (this.customerNameInput && document.activeElement !== this.customerNameInput) {
-      this.customerNameInput.value = this.store.activeOrder.customerName || 'Mira Workman';
+      this.customerNameInput.value = this.store.activeOrder.customerName || 'Pelanggan Baru';
     }
+
+    const isTakeaway = this.store.activeOrder.orderType === 'takeaway';
+    if (this.orderTypeDineIn && this.orderTypeTakeaway) {
+      this.orderTypeDineIn.classList.toggle('active', !isTakeaway);
+      this.orderTypeTakeaway.classList.toggle('active', isTakeaway);
+    }
+
+    if (this.tableSelectorBtn) {
+      this.tableSelectorBtn.style.display = isTakeaway ? 'none' : 'inline-flex';
+    }
+
     if (this.tableNumberText) {
       this.tableNumberText.innerText = this.store.activeOrder.tableNumber || 'Meja 01';
     }
@@ -729,9 +746,17 @@ class PosUI {
           this.store.setTableNumber(tbl);
           if (tbl === 'Bungkus') {
             this.store.setOrderType('takeaway');
+            if (this.tableSelectorBtn) this.tableSelectorBtn.style.display = 'none';
             if (this.orderTypeTakeaway && this.orderTypeDineIn) {
               this.orderTypeTakeaway.classList.add('active');
               this.orderTypeDineIn.classList.remove('active');
+            }
+          } else {
+            this.store.setOrderType('dine_in');
+            if (this.tableSelectorBtn) this.tableSelectorBtn.style.display = 'inline-flex';
+            if (this.orderTypeTakeaway && this.orderTypeDineIn) {
+              this.orderTypeDineIn.classList.add('active');
+              this.orderTypeTakeaway.classList.remove('active');
             }
           }
           this.closeAllModals();
@@ -928,8 +953,8 @@ class PosUI {
         <span>${transaction.orderType === 'dine_in' ? 'Makan di Tempat' : 'Bawa Pulang'}</span>
       </div>
       <div class="receipt-row">
-        <span>Pelanggan: ${transaction.customerName}</span>
-        <span>${transaction.tableNumber}</span>
+        <span>Pelanggan: ${transaction.customerName || 'Pelanggan'}</span>
+        ${transaction.orderType === 'dine_in' ? `<span>${transaction.tableNumber}</span>` : '<span>Bawa Pulang</span>'}
       </div>
 
       <div class="receipt-divider"></div>
@@ -1035,10 +1060,14 @@ class PosUI {
 
         const timeStr = new Date(order.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
+        const isTakeaway = order.orderType === 'takeaway' || order.tableNumber === 'Bawa Pulang' || order.tableNumber === 'Bungkus';
+        const displayTable = isTakeaway ? 'Bawa Pulang' : (order.tableNumber || 'Meja 01');
+        const displayCustomer = (!order.customerName || order.customerName === 'Mira Workman') ? 'Pelanggan Baru' : order.customerName;
+
         itemElem.innerHTML = `
           <div>
             <div style="font-weight: 700; color: var(--text-main); font-size: 0.95rem;">
-              ${order.tableNumber} - ${order.customerName}
+              ${displayTable} – ${displayCustomer}
             </div>
             <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
               ${order.cart.length} item • Disimpan jam ${timeStr}
