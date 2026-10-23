@@ -26,26 +26,31 @@ class PosStore {
   loadSettings() {
     try {
       const saved = localStorage.getItem(this.STORAGE_KEYS.SETTINGS);
-      return saved ? JSON.parse(saved) : {
-        storeName: 'SATE KLATAK MBAK LALA',
-        storeAddress: 'Jl. Imogiri Timur Km. 10, Jejeran, Bantul, D.I. Yogyakarta',
-        storePhone: '0812-3456-7890',
-        cashierName: 'Mira Workman',
-        enableTax: false,
-        taxPercent: 10,
-        currency: 'IDR'
-      };
-    } catch (e) {
-      return {
-        storeName: 'SATE KLATAK MBAK LALA',
-        storeAddress: 'Jl. Imogiri Timur Km. 10, Jejeran, Bantul, D.I. Yogyakarta',
-        storePhone: '0812-3456-7890',
-        cashierName: 'Mira Workman',
-        enableTax: false,
-        taxPercent: 10,
-        currency: 'IDR'
-      };
-    }
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Otomatis perbarui alamat jika masih memakai alamat lama
+        if (!parsed.storeAddress || parsed.storeAddress.includes('Imogiri')) {
+          parsed.storeAddress = 'Parkiran Timur, Pasar Kolombo, Jl. Kaliurang Km. 7, Depok, Sleman';
+        }
+        if (!parsed.cashierName || parsed.cashierName === 'Mira Workman') {
+          parsed.cashierName = 'Mbak Lala';
+        }
+        if (parsed.cashierPhoto === undefined) {
+          parsed.cashierPhoto = null;
+        }
+        return parsed;
+      }
+    } catch (e) {}
+    return {
+      storeName: 'SATE KLATAK MBAK LALA',
+      storeAddress: 'Parkiran Timur, Pasar Kolombo, Jl. Kaliurang Km. 7, Depok, Sleman',
+      storePhone: '0812-3456-7890',
+      cashierName: 'Mbak Lala',
+      cashierPhoto: null,
+      enableTax: false,
+      taxPercent: 10,
+      currency: 'IDR'
+    };
   }
 
   saveSettings(newSettings) {
@@ -463,6 +468,18 @@ class PosStore {
       return true;
     }
     return false;
+  }
+
+  // Update cashier name and photo
+  updateCashierProfile(name, photo = null) {
+    if (name) {
+      this.settings.cashierName = name.trim();
+    }
+    if (photo !== undefined) {
+      this.settings.cashierPhoto = photo;
+    }
+    this.saveSettings(this.settings);
+    return true;
   }
 }
 

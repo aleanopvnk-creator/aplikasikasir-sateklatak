@@ -91,6 +91,13 @@ class PosUI {
     this.mobileCartBackdrop = document.getElementById('mobileCartBackdrop');
     this.cartPanel = document.getElementById('cartPanel');
 
+    // Cashier Profile Elements
+    this.btnCashierProfile = document.getElementById('btnCashierProfile');
+    this.headerCashierAvatar = document.getElementById('headerCashierAvatar');
+    this.headerCashierInitials = document.getElementById('headerCashierInitials');
+    this.headerCashierPhoto = document.getElementById('headerCashierPhoto');
+    this.headerCashierName = document.getElementById('headerCashierName');
+    
     // Modals
     this.modalPayment = document.getElementById('modalPayment');
     this.modalReceipt = document.getElementById('modalReceipt');
@@ -99,6 +106,14 @@ class PosUI {
     this.modalSavedOrders = document.getElementById('modalSavedOrders');
     this.modalHistory = document.getElementById('modalHistory');
     this.modalReports = document.getElementById('modalReports');
+    this.modalCashierProfile = document.getElementById('modalCashierProfile');
+    this.modalCashierImgPreview = document.getElementById('modalCashierImgPreview');
+    this.modalCashierInitials = document.getElementById('modalCashierInitials');
+    this.cashierPhotoInput = document.getElementById('cashierPhotoInput');
+    this.btnRemoveCashierPhoto = document.getElementById('btnRemoveCashierPhoto');
+    this.cashierNameInputModal = document.getElementById('cashierNameInput');
+    this.btnSaveCashierProfile = document.getElementById('btnSaveCashierProfile');
+    this.tempCashierPhoto = null;
   }
 
   bindEvents() {
@@ -107,6 +122,7 @@ class PosUI {
       this.renderCart();
       this.renderProducts();
       this.updateCounters();
+      this.renderCashierHeader();
     });
 
     // Search Input
@@ -220,13 +236,135 @@ class PosUI {
         this.closeAllModals();
       });
     });
+
+    // Cashier Profile Modal Trigger
+    if (this.btnCashierProfile) {
+      this.btnCashierProfile.addEventListener('click', () => {
+        this.openCashierProfileModal();
+      });
+    }
+
+    // Cashier Photo Upload (FileReader to Base64)
+    if (this.cashierPhotoInput) {
+      this.cashierPhotoInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) {
+          if (file.size > 2 * 1024 * 1024) {
+            alert('Ukuran foto maksimal 2 MB.');
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            this.tempCashierPhoto = event.target.result;
+            if (this.modalCashierImgPreview) {
+              this.modalCashierImgPreview.src = this.tempCashierPhoto;
+              this.modalCashierImgPreview.style.display = 'block';
+            }
+            if (this.modalCashierInitials) {
+              this.modalCashierInitials.style.display = 'none';
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    // Remove Cashier Photo Button
+    if (this.btnRemoveCashierPhoto) {
+      this.btnRemoveCashierPhoto.addEventListener('click', () => {
+        this.tempCashierPhoto = null;
+        if (this.cashierPhotoInput) this.cashierPhotoInput.value = '';
+        if (this.modalCashierImgPreview) this.modalCashierImgPreview.style.display = 'none';
+        if (this.modalCashierInitials) {
+          this.modalCashierInitials.style.display = 'block';
+          const name = (this.cashierNameInputModal && this.cashierNameInputModal.value) || 'Mbak Lala';
+          this.modalCashierInitials.innerText = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'ML';
+        }
+      });
+    }
+
+    // Quick Cashier Preset Buttons
+    document.querySelectorAll('.quick-cashier-preset').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const presetName = e.currentTarget.dataset.name;
+        if (this.cashierNameInputModal) {
+          this.cashierNameInputModal.value = presetName;
+          const initials = presetName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'ML';
+          if (!this.tempCashierPhoto && this.modalCashierInitials) {
+            this.modalCashierInitials.innerText = initials;
+          }
+        }
+      });
+    });
+
+    // Save Cashier Profile Button
+    if (this.btnSaveCashierProfile) {
+      this.btnSaveCashierProfile.addEventListener('click', () => {
+        const newName = (this.cashierNameInputModal && this.cashierNameInputModal.value.trim()) || 'Mbak Lala';
+        this.store.updateCashierProfile(newName, this.tempCashierPhoto);
+        this.renderCashierHeader();
+        this.closeAllModals();
+        sound.playTap();
+      });
+    }
   }
 
   render() {
+    this.renderCashierHeader();
     this.renderCategories();
     this.renderProducts();
     this.renderCart();
     this.updateCounters();
+  }
+
+  renderCashierHeader() {
+    const name = this.store.settings.cashierName || 'Mbak Lala';
+    const photo = this.store.settings.cashierPhoto;
+    if (this.headerCashierName) {
+      this.headerCashierName.innerText = name;
+    }
+    
+    const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'ML';
+    
+    if (photo && this.headerCashierPhoto) {
+      this.headerCashierPhoto.src = photo;
+      this.headerCashierPhoto.style.display = 'block';
+      if (this.headerCashierInitials) this.headerCashierInitials.style.display = 'none';
+    } else {
+      if (this.headerCashierPhoto) this.headerCashierPhoto.style.display = 'none';
+      if (this.headerCashierInitials) {
+        this.headerCashierInitials.style.display = 'block';
+        this.headerCashierInitials.innerText = initials;
+      }
+    }
+  }
+
+  openCashierProfileModal() {
+    const currentName = this.store.settings.cashierName || 'Mbak Lala';
+    const currentPhoto = this.store.settings.cashierPhoto;
+    this.tempCashierPhoto = currentPhoto;
+
+    if (this.cashierNameInputModal) {
+      this.cashierNameInputModal.value = currentName;
+    }
+
+    const initials = currentName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'ML';
+
+    if (currentPhoto && this.modalCashierImgPreview) {
+      this.modalCashierImgPreview.src = currentPhoto;
+      this.modalCashierImgPreview.style.display = 'block';
+      if (this.modalCashierInitials) this.modalCashierInitials.style.display = 'none';
+    } else {
+      if (this.modalCashierImgPreview) this.modalCashierImgPreview.style.display = 'none';
+      if (this.modalCashierInitials) {
+        this.modalCashierInitials.style.display = 'block';
+        this.modalCashierInitials.innerText = initials;
+      }
+    }
+
+    if (this.modalCashierProfile) {
+      this.modalCashierProfile.classList.add('active');
+    }
   }
 
   // --- Clock ---
@@ -700,8 +838,9 @@ class PosUI {
 
     paper.innerHTML = `
       <div class="receipt-header">
+        <img src="assets/logo.jpg" alt="Logo" class="receipt-logo-img">
         <div class="receipt-title">${this.store.settings.storeName}</div>
-        <div>${this.store.settings.storeAddress}</div>
+        <div style="font-size:0.72rem; line-height:1.2; margin:2px 0;">${this.store.settings.storeAddress}</div>
         <div>Telp: ${this.store.settings.storePhone}</div>
       </div>
 

@@ -1,6 +1,6 @@
 # 🍢 Sistem Kasir POS - Sate Klatak Mbak Lala
 
-Aplikasi Point of Sale (POS) modern, cepat, dan responsif untuk **Sate Klatak Mbak Lala** (Jejeran, Bantul, D.I. Yogyakarta). Didesain khusus untuk operasional kasir restoran dengan tampilan rapi, elegan, dan otomatis menyesuaikan di perangkat **Desktop PC, Laptop, iPad/Tablet, serta Smartphone (Android & iOS)**.
+Aplikasi Point of Sale (POS) modern, cepat, dan responsif untuk **Sate Klatak Mbak Lala** (Parkiran Timur, Pasar Kolombo, Jl. Kaliurang Km. 7, Depok, Sleman). Didesain khusus untuk operasional kasir restoran dengan tampilan rapi, elegan, dan otomatis menyesuaikan di perangkat **Desktop PC, Laptop, iPad/Tablet, serta Smartphone (Android & iOS)**.
 
 ---
 

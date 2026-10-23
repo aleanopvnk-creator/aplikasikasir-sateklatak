@@ -26,17 +26,12 @@
     <!-- Top Navigation Header -->
     <header class="top-header">
       <div class="brand-section">
-        <div class="brand-logo-badge" title="Sate Klatak Mbak Lala">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2v20M8 5h8M7 10h10M8 15h8"/>
-          </svg>
+        <div class="brand-logo-container" title="Sate Klatak Mbak Lala">
+          <img src="assets/logo.jpg" alt="Logo Sate Klatak Mbak Lala" class="brand-logo-img">
         </div>
         <div class="brand-info">
-          <h1>
-            SATE KLATAK MBAK LALA
-            <span class="pos-tag">POS v1.0</span>
-          </h1>
-          <p>Jl. Imogiri Timur Km. 10, Jejeran, Bantul</p>
+          <h1>SATE KLATAK MBAK LALA</h1>
+          <p>Parkiran Timur, Pasar Kolombo, Jl. Kaliurang Km. 7, Depok, Sleman</p>
         </div>
       </div>
 
@@ -75,10 +70,14 @@
           <span>Laporan</span>
         </button>
 
-        <!-- Cashier Avatar Badge -->
-        <div class="cashier-badge" title="Kasir Aktif">
-          <div class="cashier-avatar">ML</div>
+        <!-- Cashier Profile Button (Clickable to change profile) -->
+        <div class="cashier-badge" id="btnCashierProfile" title="Klik untuk ubah profil kasir">
+          <div class="cashier-avatar" id="headerCashierAvatar">
+            <span id="headerCashierInitials">ML</span>
+            <img id="headerCashierPhoto" src="" alt="Foto Kasir" class="cashier-avatar-img" style="display: none;">
+          </div>
           <span id="headerCashierName">Mbak Lala</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);"><path d="m6 9 6 6 6-6"/></svg>
         </div>
       </div>
     </header>
@@ -472,6 +471,56 @@
       </div>
       <div class="modal-footer">
         <button class="btn-modal-close" style="padding: 8px 16px; border: 1px solid var(--border); background: #ffffff; border-radius: 8px; font-weight: 700; cursor: pointer;">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Modal Ubah Profil Kasir -->
+  <div id="modalCashierProfile" class="modal-overlay">
+    <div class="modal-content" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3>Ubah Profil Kasir</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+          <!-- Avatar Preview -->
+          <div id="modalCashierAvatarPreview" style="width: 88px; height: 88px; border-radius: 50%; background: #e2e8f0; border: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 800; color: #475569; overflow: hidden; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative;">
+            <span id="modalCashierInitials">ML</span>
+            <img id="modalCashierImgPreview" src="" alt="Preview Foto" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+          </div>
+          
+          <div style="display: flex; gap: 8px;">
+            <label for="cashierPhotoInput" style="padding: 7px 14px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; font-weight: 700; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <span>Unggah Foto</span>
+            </label>
+            <input type="file" id="cashierPhotoInput" accept="image/*" style="display: none;">
+            
+            <button type="button" id="btnRemoveCashierPhoto" style="padding: 7px 12px; background: #ffffff; border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; font-weight: 600; color: var(--danger); cursor: pointer;">
+              Hapus Foto
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="cashierNameInput">Nama Kasir / Petugas:</label>
+          <input type="text" id="cashierNameInput" class="form-input" placeholder="Masukkan nama kasir..." value="Mbak Lala">
+        </div>
+
+        <div>
+          <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:6px;">PILIHAN CEPAT:</label>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <button type="button" class="quick-cashier-preset" data-name="Mbak Lala" style="padding: 5px 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer;">Mbak Lala</button>
+            <button type="button" class="quick-cashier-preset" data-name="Kasir 1" style="padding: 5px 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer;">Kasir 1</button>
+            <button type="button" class="quick-cashier-preset" data-name="Kasir 2" style="padding: 5px 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer;">Kasir 2</button>
+            <button type="button" class="quick-cashier-preset" data-name="Admin POS" style="padding: 5px 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer;">Admin POS</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-close" style="padding: 8px 16px; border: 1px solid var(--border); background: #ffffff; border-radius: 8px; font-weight: 700; cursor: pointer;">Batal</button>
+        <button id="btnSaveCashierProfile" style="padding: 8px 20px; background: var(--primary); color: #ffffff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Simpan Profil</button>
       </div>
     </div>
   </div>
