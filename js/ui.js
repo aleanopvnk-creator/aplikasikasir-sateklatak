@@ -975,24 +975,19 @@ class PosUI {
 
       <div class="receipt-divider"></div>
 
-      <div class="receipt-row">
-        <span>Metode: ${transaction.paymentMethod === 'cash' ? 'TUNAI' : 'QRIS'}</span>
-        <span>${transaction.paymentMethod === 'cash' ? `Bayar: ${formatRupiah(transaction.cashTendered)}` : 'LUNAS'}</span>
-      </div>
-
       ${transaction.paymentMethod === 'cash' ? `
+        <div class="receipt-row">
+          <span>Bayar</span>
+          <span>${formatRupiah(transaction.cashTendered)}</span>
+        </div>
         <div class="receipt-row">
           <span>Kembalian</span>
           <span>${formatRupiah(transaction.change)}</span>
         </div>
       ` : `
         <div class="receipt-row">
-          <span>NMID</span>
-          <span>ID1026545930905</span>
-        </div>
-        <div class="receipt-qris-box">
-          <img src="assets/qris_qr.png" alt="QRIS Sate Klatak Mbak Lala" class="receipt-qris-img">
-          <div class="receipt-qris-nmid">QRIS SATE KLATAK MBAK LALA</div>
+          <span>Status</span>
+          <span>LUNAS</span>
         </div>
       `}
 
@@ -1001,7 +996,6 @@ class PosUI {
       <div class="receipt-footer">
         <p style="font-weight:bold; margin-bottom:4px;">MATUR NUWUN SAMPUN RAWUH</p>
         <p>Terima Kasih Atas Kunjungan Anda</p>
-        <p style="margin-top:6px; font-weight:700;">sate klatak mbak lala</p>
       </div>
     `;
 
